@@ -21,6 +21,7 @@
     "jsonwebtoken": "^9.0.2"
   },
   "prisma": {
+    "seed":"ts-node src/models/seed/seed.ts",
     "schema": "src/models/schema.prisma"
   },
   "devDependencies": {

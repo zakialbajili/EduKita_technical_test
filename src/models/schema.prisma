@@ -13,15 +13,66 @@ datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")
 }
+
 model User {
-  id    Int     @id @default(autoincrement())
-  name  String
-  password String 
-  email String  @unique
-  role RoleUser @default(STUDENT)
+  id              Int              @id @default(autoincrement())
+  name            String
+  password        String
+  email           String           @unique
+  role            RoleUser         @default(STUDENT)
+  created_at      DateTime         @default(now())
+  updated_at      DateTime         @default(now()) @updatedAt
+  user AuthAssignment[] @relation("AssignmentSender")
+
   @@map("users")
 }
-enum RoleUser{
+
+model Assignment {
+  id         Int               @id @default(autoincrement())
+  subject    SubjectAssignment
+  title      String
+  content    String
+  created_at DateTime          @default(now())
+  updated_at DateTime          @default(now()) @updatedAt
+  assignment AuthAssignment[]  @relation("AssignmentId")
+
+  @@map("assignment")
+}
+
+model AuthAssignment {
+  id           Int              @id @default(autoincrement())
+  iduser       Int
+  idassignment Int
+  answer       String
+  status       StatusAssignment
+  created_at   DateTime         @default(now())
+  updated_at   DateTime         @default(now()) @updatedAt
+  user         User             @relation("AssignmentSender", fields: [iduser], references: [id])
+  assignment   Assignment       @relation("AssignmentId", fields: [idassignment], references: [id])
+
+  @@map("authAssignment")
+}
+
+model ResultAssignment {
+  id         Int      @id @default(autoincrement())
+  iduser     Int
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now()) @updatedAt
+
+  @@map("resultAssignment")
+}
+
+enum RoleUser {
   STUDENT
   TEACHER
+}
+
+enum SubjectAssignment {
+  ENGLISH
+  MATEMATHIC
+}
+
+enum StatusAssignment {
+  PROGRESS
+  DONE
 }
