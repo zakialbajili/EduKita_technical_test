@@ -2,10 +2,8 @@ import { Request, Response } from "express"
 import assignmentServices from "../services/assignmentServices"
 import { errorResponse, successResponse } from "../helpers/response/webResponse"
 import handleError from "../helpers/errors/handleErrors"
-enum subjectFilter {
-    ENGLISH = "ENGLISH",
-    MATEMATHIC = "MATEMATHIC"
-}
+import { subjectFilter } from "../types/assignmentTypes"
+
 class assignmentsController {
     listAssignmentSubmitted = async (req: Request, res: Response) => {
         try {

@@ -49,6 +49,7 @@ model AuthAssignment {
   updated_at   DateTime         @default(now()) @updatedAt
   user         User             @relation("AssignmentSender", fields: [iduser], references: [id])
   assignment   Assignment       @relation("AssignmentId", fields: [idassignment], references: [id])
+  authAssignment ResultAssignment? @relation("IdAuthAssignment") // ← tambahkan tanda tanya di sini
 
   @@map("authAssignment")
 }
@@ -56,11 +57,16 @@ model AuthAssignment {
 model ResultAssignment {
   id         Int      @id @default(autoincrement())
   iduser     Int
+  idauthassignment Int @unique
+  grades     Int
+  feedback   String
   created_at DateTime @default(now())
   updated_at DateTime @default(now()) @updatedAt
+  authAssignment AuthAssignment @relation("IdAuthAssignment", fields: [idauthassignment], references: [id])
 
   @@map("resultAssignment")
 }
+
 
 enum RoleUser {
   STUDENT

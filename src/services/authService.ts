@@ -4,24 +4,7 @@ import { Response } from "express"
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 import { AuthenticationError, ValidationError } from "../utils/errors/customErrors"
-
-type loginPayload = {
-  email: string;
-  password: string;
-}
-type registerPayload = {
-  name:string;
-  email: string;
-  password: string;
-  role: "STUDENT" | "TEACHER";
-}
-
-type AccountType = {
-  name: string
-  email: string
-  password?: string
-  role: "STUDENT" | "TEACHER"
-}
+import { AccountType, loginPayload, registerPayload } from "../types/userTypes"
 
 dotenv.config()
 
@@ -105,8 +88,11 @@ class AuthServices {
 
   registerUser = async(req:registerPayload) => {
     try {
+      //get properti in payload
       const {name, email, password, role} = req
+      //hashinf password
       const hashPassword = bcrypt.hashSync(password, 10)
+      // create user
       const createUser = await db.user.create({
         data:{name, email, password:hashPassword, role}
       })
