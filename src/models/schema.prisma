@@ -16,56 +16,41 @@ datasource db {
 
 model User {
   id              Int              @id @default(autoincrement())
-  name            String
   password        String
   email           String           @unique
-  role            RoleUser         @default(STUDENT)
   created_at      DateTime         @default(now())
   updated_at      DateTime         @default(now()) @updatedAt
-  user AuthAssignment[] @relation("AssignmentSender")
-
+  user Assignment[] @relation("AssignmentSender")
+  userProfile UserProfile? @relation("IdUser")
   @@map("users")
+}
+
+model UserProfile {
+  id              Int              @id @default(autoincrement())
+  iduser Int @unique
+  name  String
+  role  RoleUser @default(STUDENT)
+  created_at      DateTime         @default(now())
+  updated_at      DateTime         @default(now()) @updatedAt
+  userProfile User @relation("IdUser", fields: [iduser], references: [id]) 
 }
 
 model Assignment {
   id         Int               @id @default(autoincrement())
+  iduser     Int
   subject    SubjectAssignment
   title      String
   content    String
+  feedback   String?
+  grade     Int?
   created_at DateTime          @default(now())
   updated_at DateTime          @default(now()) @updatedAt
-  assignment AuthAssignment[]  @relation("AssignmentId")
+  user User @relation("AssignmentSender", fields: [iduser], references: [id])
 
   @@map("assignment")
 }
 
-model AuthAssignment {
-  id           Int              @id @default(autoincrement())
-  iduser       Int
-  idassignment Int
-  answer       String
-  status       StatusAssignment
-  created_at   DateTime         @default(now())
-  updated_at   DateTime         @default(now()) @updatedAt
-  user         User             @relation("AssignmentSender", fields: [iduser], references: [id])
-  assignment   Assignment       @relation("AssignmentId", fields: [idassignment], references: [id])
-  authAssignment ResultAssignment? @relation("IdAuthAssignment") // ← tambahkan tanda tanya di sini
 
-  @@map("authAssignment")
-}
-
-model ResultAssignment {
-  id         Int      @id @default(autoincrement())
-  iduser     Int
-  idauthassignment Int @unique
-  grades     Int
-  feedback   String
-  created_at DateTime @default(now())
-  updated_at DateTime @default(now()) @updatedAt
-  authAssignment AuthAssignment @relation("IdAuthAssignment", fields: [idauthassignment], references: [id])
-
-  @@map("resultAssignment")
-}
 
 
 enum RoleUser {

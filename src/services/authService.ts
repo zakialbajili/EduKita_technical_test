@@ -29,9 +29,9 @@ class AuthServices {
   #generateAccessToken = (account: AccountType) => {
     //payload for create access token
     const payload = {
-      name: account.name,
+      name: account.userProfile.name,
       email: account.email,
-      role: account.role,
+      role: account.userProfile.role,
     }
     //create access token
     const token = jwt.sign(payload, this.jwtSecretKey, {
@@ -43,9 +43,9 @@ class AuthServices {
   #generateRefreshToken = (account:AccountType) => {
     //payload for create access token
     const payload = {
-      name: account.name,
+      name: account.userProfile.name,
       email: account.email,
-      role: account.role,
+      role: account.userProfile.role,
     }
     //create access token
     const token = jwt.sign(payload, this.jwtSecretKey, {
@@ -59,7 +59,17 @@ class AuthServices {
       //get properti in payload
       const { email, password } = req
       //confirmation user available in database
-      const isUser = await db.user.findUnique({ where: { email } })
+      const isUser = await db.user.findUnique({ 
+        where: { email } ,
+        select:{
+          id:true,
+          email:true,
+          password:true,
+          userProfile:{
+            select:{name:true, role:true}
+          }
+        }
+      })
       if (!isUser) {
         throw new AuthenticationError("User not found")
       }
@@ -68,12 +78,20 @@ class AuthServices {
       if (!comparePassword) {
         throw new AuthenticationError("Password not match")
       }
+      const account: AccountType = {
+        id: isUser.id,
+        email,
+        userProfile: isUser.userProfile!,
+      };
+      
       //create access token
-      const accessToken = this.#generateAccessToken(isUser)
+      const accessToken = this.#generateAccessToken(account);
       //create refresh token
-      const refreshToken = this.#generateRefreshToken(isUser)
+      const refreshToken = this.#generateRefreshToken(account);
       //get name and role from data isUser for data API purpose 
-      const {id, name, role} = isUser
+      const { id, userProfile } = isUser
+      const name = userProfile?.name
+      const role = userProfile?.role
       return{id, name, email, role, accessToken, refreshToken}
     } catch (error) {
       console.error("Error in AuthServices Module loginUsers Method", error)
@@ -94,15 +112,27 @@ class AuthServices {
       const hashPassword = bcrypt.hashSync(password, 10)
       // create user
       const createUser = await db.user.create({
-        data:{name, email, password:hashPassword, role}
+        data:{
+          email,
+          password:hashPassword,
+          userProfile:{
+            create:{name,role}
+          }
+        },
+        select:{
+          email:true,
+          userProfile:{
+            select:{name:true, role:true}
+          }
+        }
       })
       if(!createUser){
         throw new ValidationError("Data yang dikirimkan belum sesuai", "BAD_REQUEST")
       }
       return {
-        name:createUser.name,
+        name:createUser.userProfile?.name,
         email:createUser.email,
-        role:createUser.role,
+        role:createUser.userProfile?.role,
       }
     } catch (error) {
       console.error("Error in AuthServices Module registerUsers Method", error)

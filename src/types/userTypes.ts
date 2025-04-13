@@ -9,10 +9,13 @@ export type registerPayload = {
     password: string;
     role: "STUDENT" | "TEACHER";
 }
-
+type userProfile = {
+    name: string;
+    role: "STUDENT" | "TEACHER";
+}
 export type AccountType = {
-    name: string
-    email: string
-    password?: string
-    role: "STUDENT" | "TEACHER"
+    id?:number;
+    email: string;
+    password?: string;
+    userProfile:userProfile
 }

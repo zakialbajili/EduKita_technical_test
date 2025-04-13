@@ -5,10 +5,18 @@ class AssignmentServices {
     submitAssignment = async(req:submitAssignment) => {
         try {
             const {subject, content, title, studentId} = req
-            // const result = await db.authAssignment.create({
-            //     data:{
-            //     }
-            // })
+            const result = await db.assignment.create({
+                data:{
+                    subject:subject,
+                    content,
+                    title,
+                    iduser:studentId
+                }
+            })
+            if(result instanceof Error){
+                throw new Error
+            }
+            return result
         } catch (error) {
             console.error("Error in AssignmentServices Module filteredAssignmentSubmitted Method", error)
         }
@@ -18,14 +26,9 @@ class AssignmentServices {
             //get value query from request
             const filtered = req
             //find assignment submitted that subject match with filter
-            const results = await db.authAssignment.findMany({
+            const results = await db.assignment.findMany({
                 where:{
-                    assignment:{
                         subject:filtered
-                    }
-                },
-                include:{
-                    assignment:true
                 },
                 orderBy:{
                     created_at:"desc"
@@ -43,7 +46,7 @@ class AssignmentServices {
     listAssignmentSubmitted = async() => {
         try {
             // get list assignment submitted
-            const results = await db.authAssignment.findMany({
+            const results = await db.assignment.findMany({
                 orderBy:{
                     created_at:"desc"
                 }
@@ -60,13 +63,10 @@ class AssignmentServices {
     detailAssignmentSubmitted = async(studentId:number, assignmentId:number) => {
         try {
             //find assignment submitted by id student and id assignment
-            const result = await db.authAssignment.findFirst({
+            const result = await db.assignment.findFirst({
                 where:{
+                    id:assignmentId,
                     iduser:studentId,
-                    idassignment:assignmentId
-                },
-                include:{
-                    assignment:true
                 }
             })
             //throw error if error when find data
