@@ -18,7 +18,7 @@ const CardMenu:React.FC<propsCardMenu> = ({href, urlIcon, title}) => {
               alt="Menu Icon"
               width={100}
               height={60}
-              className="w-20 h-auto object-contain"
+              className="w-20 h-[64px] object-contain"
             />
             }
             <h2 className="font-semibold text-lg text-white text-center">

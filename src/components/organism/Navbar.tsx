@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import Link from "next/link";
 import {
   NavigationMenu,
@@ -10,6 +10,9 @@ import Image from "next/image";
 import { ModeToggle } from "../atoms/mode-toggle";
 import { useEffect, useState } from "react";
 import { credentialUser } from "@/lib/types/authTypes";
+import { Button } from "../ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 export default function Navbar() {
   const [dataUser, setDatauser] = useState<credentialUser | null>(null);
@@ -18,9 +21,15 @@ export default function Navbar() {
     if (accessToken) {
       setDatauser(JSON.parse(accessToken));
     }
-  },[]);
+  }, []);
+  const handleLogout = () => {
+    if (dataUser) {
+      sessionStorage.removeItem("accessToken");
+      window.location.href = "/";
+    }
+  };
   return (
-    <header className="flex justify-around p-4 shadow-xl items-center sticky top-0 bg-background dark:bg-accent-green/50 z-30">
+    <header className="flex justify-around p-4 shadow-xl items-center sticky top-0 bg-background dark:bg-[#01522f] z-30">
       <Link href={"/"}>
         <Image
           src={"/assets/images/logo_edukita.png"}
@@ -34,8 +43,12 @@ export default function Navbar() {
         <NavigationMenuList>
           <NavigationMenuItem>
             <NavigationMenuLink asChild>
-              <Link href="/docs" passHref>
-                Documentation
+              <Link 
+                href={`${dataUser?.results?.role === "TEACHER" ? '/dashboard/teacher':'/dashboard/student' }`}
+                passHref
+                className="dark:hover:bg-gray-700/50"
+              >
+                Dashboard
               </Link>
             </NavigationMenuLink>
           </NavigationMenuItem>
@@ -44,12 +57,25 @@ export default function Navbar() {
       <div className="flex gap-3 items-center">
         <ModeToggle />
         {dataUser ? (
-          <Link
-          href={"/"}
-          className="py-2 px-5 bg-accent-green rounded text-white font-semibold"
-        >
-          Logout
-        </Link>
+          <div className="flex gap-2 items-center">
+            <Popover>
+              <PopoverTrigger>
+                <Avatar>
+                  <AvatarImage />
+                  <AvatarFallback>U</AvatarFallback>
+                </Avatar>
+              </PopoverTrigger>
+              <PopoverContent className="w-fit dark:bg-gray-700/50">
+                <Button
+                  className="w-fit py-2 px-5 bg-accent-green rounded text-white font-semibold"
+                  onClick={handleLogout}
+                >
+                  Logout
+                </Button>
+              </PopoverContent>
+            </Popover>
+            <p className="hidden md:block" >{dataUser?.results?.name}</p>
+          </div>
         ) : (
           <Link
             href={"/"}

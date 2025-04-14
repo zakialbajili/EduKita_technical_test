@@ -18,7 +18,6 @@ import {
 } from "@tanstack/react-query";
 import Swal from "sweetalert2";
 import { z } from "zod";
-import { Textarea } from "../ui/textarea";
 import {
   Select,
   SelectContent,
@@ -26,31 +25,34 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import fetchAssignment from "@/lib/fetch/fetchAssignment";
-import { payloadAssignment } from "@/lib/types/assignmentTypes";
+
+import { registerPayload } from "@/lib/types/authTypes";
+import fetchAuth from "@/lib/fetch/fetchAuth";
 
 const queryClient = new QueryClient();
 
 const formSchema = z.object({
-  subject: z.enum(["ENGLISH", "MATEMATHIC"], {
-    required_error: "Subject is required",
-    invalid_type_error: "Subject must be either 'english' or 'matemathic'",
+  role: z.enum(["STUDENT", "TEACHER"], {
+    required_error: "Role is required",
+    invalid_type_error: "Role must be either 'STUDENT' or 'TEACHER'",
   }),
-  title: z.string().min(2, { message: "Title must filled" }),
-  content: z.string().min(2, { message: "Content must filled" }),
+  name: z.string().min(2, { message: "Name must filled" }),
+  email: z.string().min(2, { message: "Email must filled" }),
+  password: z.string().min(2, { message: "Password must filled" }),
 });
-const TemplateFormAddAssignment = () => {
+const TemplateCreateUser = () => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      subject: "ENGLISH",
-      title: "",
-      content: "",
+      role: "STUDENT",
+      name: "",
+      email: "",
+      password:""
     },
   });
   const mutation = useMutation({
-    mutationFn: async (data: payloadAssignment) => {
-      const response = await fetchAssignment.sendAssignment(data);
+    mutationFn: async (data: registerPayload) => {
+      const response = await fetchAuth.fetchRegistUser(data);
       console.log("ini reponse api", response);
       return response;
     },
@@ -58,7 +60,7 @@ const TemplateFormAddAssignment = () => {
       Swal.fire({
         icon: "success",
         title: "Success",
-        text: "Send assignment successful",
+        text: "Create user successful",
         timer: 1500,
         showConfirmButton: false,
       });
@@ -67,9 +69,7 @@ const TemplateFormAddAssignment = () => {
         const dataUser = JSON.parse(accessToken);
         const userRole = dataUser.results?.role;
         if (userRole === "TEACHER") {
-          window.location.href = "/dashboard/teacher/assignment";
-        } else if (userRole === "STUDENT") {
-          window.location.href = "/dashboard/student/assignment";
+          window.location.href = "/dashboard/teacher";
         }
       }
     },
@@ -77,33 +77,26 @@ const TemplateFormAddAssignment = () => {
       Swal.fire({
         icon: "error",
         title: "Failed",
-        text: "Error occured when Send assignment",
+        text: "Error occured create user",
         timer: 1500,
         showConfirmButton: false,
       });
     },
   });
   function onSubmit(values: z.infer<typeof formSchema>) {
-    const {subject, title, content} = values
-    const accessToken = sessionStorage.getItem("accessToken")
-    if(accessToken){
-        const dataUser = JSON.parse(accessToken)
-        const studentId = dataUser.results.id
-        const payload = {subject, title, content, studentId}
-        mutation.mutate(payload);
-    }
+    mutation.mutate(values);
   }
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-3">
         <FormField
           control={form.control}
-          name="title"
+          name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Title</FormLabel>
+              <FormLabel>Name</FormLabel>
               <FormControl>
-                <Input placeholder="Enter your title" {...field} />
+                <Input placeholder="Enter your name" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -111,18 +104,35 @@ const TemplateFormAddAssignment = () => {
         />
         <FormField
           control={form.control}
-          name="subject"
-          render={({field}) => (
+          name="email"
+          render={({ field }) => (
             <FormItem>
-              <FormLabel>Subject</FormLabel>
+              <FormLabel>Email</FormLabel>
               <FormControl>
-                <Select defaultValue="ENGLISH" value={field.value} onValueChange={field.onChange}>
+                <Input placeholder="Enter your email" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="role"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Role</FormLabel>
+              <FormControl>
+                <Select
+                  defaultValue="STUDENT"
+                  value={field.value}
+                  onValueChange={field.onChange}
+                >
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Choose your subject" />
+                    <SelectValue placeholder="Choose role" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="ENGLISH">ENGLISH</SelectItem>
-                    <SelectItem value="MATEMATHIC">MATEMATHIC</SelectItem>
+                    <SelectItem value="STUDENT">STUDENT</SelectItem>
+                    <SelectItem value="TEACHER">TEACHER</SelectItem>
                   </SelectContent>
                 </Select>
               </FormControl>
@@ -132,12 +142,16 @@ const TemplateFormAddAssignment = () => {
         />
         <FormField
           control={form.control}
-          name="content"
+          name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Content</FormLabel>
+              <FormLabel>Password</FormLabel>
               <FormControl>
-                <Textarea placeholder="Enter your content" {...field} />
+                <Input
+                  type="password"
+                  placeholder="Enter your password"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -151,11 +165,13 @@ const TemplateFormAddAssignment = () => {
     </Form>
   );
 };
-const FormAddAssignment = () => {
+const FormCreateUser = () => {
   return (
     <QueryClientProvider client={queryClient}>
-      <TemplateFormAddAssignment />
+      <div className="p-4 border-2 rounded-lg shadow-lg">
+        <TemplateCreateUser />
+      </div>
     </QueryClientProvider>
   );
 };
-export default FormAddAssignment;
+export default FormCreateUser;

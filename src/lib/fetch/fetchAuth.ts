@@ -1,9 +1,9 @@
 import api from "@/axios/config"
-import { loginPayload } from "../types/authTypes"
+import { loginPayload, registerPayload } from "../types/authTypes"
 
 class authModule {
-    fetchRegistUser = async(payload:FormData) => {
-        const {data} = await api.post('/auth/register', payload)
+    fetchRegistUser = async(payload:registerPayload) => {
+        const {data} = await api.post('/users', payload)
         return data
     }
     fetchLoginUser = async(payload:loginPayload) => {

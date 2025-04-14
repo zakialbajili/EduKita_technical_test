@@ -15,9 +15,7 @@ const ModalAddAssignment = () => {
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader className="flex flex-col justify-center items-center">
           <DialogTitle>Add Assignment</DialogTitle>
-          <DialogDescription>
-            Isi detail assignment yang akan dikirim
-          </DialogDescription>
+          <DialogDescription>Fill in the details of the assignment to be sent</DialogDescription>
         </DialogHeader>
         <FormAddAssignment/>
       </DialogContent>
