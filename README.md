@@ -1,5 +1,3 @@
-# Edukita Backend API
-
 # 📚 Edukita Assignment Platform
 
 Platform untuk mengelola assignment siswa
