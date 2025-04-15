@@ -24,11 +24,11 @@ npm run install
 ``` 
 - Buat file .env dan copy file .env.example kedalam file tersebut
 - Jalankan server dengan perintah langsung atau lakukan build terlebih dahulu
-    1. Secara langsung
+# Secara langsung
 ```bash
 npm run dev
 ``` 
-    2. Build terlebih dahulu
+# Build terlebih dahulu
 ```bash
 npm run build
 ``` 
