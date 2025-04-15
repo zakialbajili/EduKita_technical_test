@@ -13,6 +13,7 @@ import { credentialUser } from "@/lib/types/authTypes";
 import { Button } from "../ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import Swal from "sweetalert2";
 
 export default function Navbar() {
   const [dataUser, setDatauser] = useState<credentialUser | null>(null);
@@ -20,6 +21,15 @@ export default function Navbar() {
     const accessToken = sessionStorage.getItem("accessToken");
     if (accessToken) {
       setDatauser(JSON.parse(accessToken));
+    } else {
+      Swal.fire({
+        icon: "error",
+        title: "Failed",
+        text: "You not have persmission, please login again!",
+        timer: 1500,
+        showConfirmButton: false,
+      });
+      window.location.href="/auth/login"
     }
   }, []);
   const handleLogout = () => {
@@ -43,8 +53,12 @@ export default function Navbar() {
         <NavigationMenuList>
           <NavigationMenuItem>
             <NavigationMenuLink asChild>
-              <Link 
-                href={`${dataUser?.results?.role === "TEACHER" ? '/dashboard/teacher':'/dashboard/student' }`}
+              <Link
+                href={`${
+                  dataUser?.results?.role === "TEACHER"
+                    ? "/dashboard/teacher"
+                    : "/dashboard/student"
+                }`}
                 passHref
                 className="dark:hover:bg-gray-700/50"
               >
@@ -74,7 +88,7 @@ export default function Navbar() {
                 </Button>
               </PopoverContent>
             </Popover>
-            <p className="hidden md:block" >{dataUser?.results?.name}</p>
+            <p className="hidden md:block">{dataUser?.results?.name}</p>
           </div>
         ) : (
           <Link

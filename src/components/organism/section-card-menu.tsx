@@ -1,9 +1,8 @@
 import { cn } from "@/lib/utils";
 import React from "react";
 
-interface SectionCardMenuProps extends React.HTMLAttributes<HTMLDivElement> {}
 
-const SectionCardMenu = ({ className, children, ...props }: SectionCardMenuProps) => {
+const SectionCardMenu = ({ className, children, ...props }: React.HTMLAttributes<HTMLDivElement>) => {
   return (
     <div 
     className={cn(

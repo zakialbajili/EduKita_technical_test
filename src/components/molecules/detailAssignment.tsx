@@ -27,12 +27,14 @@ import FormSubmitGrade from "./FormSubmitGrade";
 interface propsDetailAssignment {
   studentId: number;
   assignmentId: number;
+  scope?: "student" | "teacher";
 }
 
 const queryClient = new QueryClient();
 const TemplateDetailAssignment: React.FC<propsDetailAssignment> = ({
   studentId,
   assignmentId,
+  scope = "teacher",
 }) => {
   const fetchAPIDetailAssignment =
     async (): Promise<DetailAssignmentResponse> => {
@@ -77,13 +79,33 @@ const TemplateDetailAssignment: React.FC<propsDetailAssignment> = ({
             <p>{detailAssignment.results.content}</p>
           </CardContent>
           <CardFooter className="">
-            <Accordion type="single" collapsible className="w-full shadow-lg p-3 rounded-lg border-2">
+            <Accordion
+              type="single"
+              collapsible
+              className="w-full shadow-lg p-3 rounded-lg border-2"
+            >
               <AccordionItem value="item-1">
                 <AccordionTrigger className="py-0">
-                    <h4 className="text-lg">Balas</h4>
+                  <h4 className="text-lg">
+                    {scope === "teacher" ? "Balas" : "Result"}
+                  </h4>
                 </AccordionTrigger>
                 <AccordionContent className="py-5">
-                    <FormSubmitGrade assignmentId={assignmentId}/>
+                    {scope === "teacher" &&
+                        <FormSubmitGrade assignmentId={assignmentId} />
+                    }
+                    {scope === "student" &&
+                        <div className="flex flex-col gap-3">
+                            <div className="flex flex-col gap-1">
+                                <h4 className="font-semibold">Grade:</h4>
+                                <p className={`${detailAssignment.results.grade>50? 'text-accent-green':'text-accent-red'} font-bold text-lg`}>{detailAssignment.results.grade}</p>
+                            </div>
+                            <div className="flex flex-col gap-1">
+                                <h4 className="font-semibold">Feedback:</h4>
+                                <p className="dark:text-gray-300">{detailAssignment.results.feedback}</p>
+                            </div>
+                        </div>
+                    }
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
@@ -96,10 +118,12 @@ const TemplateDetailAssignment: React.FC<propsDetailAssignment> = ({
 const DetailAssignment: React.FC<propsDetailAssignment> = ({
   studentId,
   assignmentId,
+  scope = "teacher",
 }) => {
   return (
     <QueryClientProvider client={queryClient}>
       <TemplateDetailAssignment
+        scope={scope}
         studentId={studentId}
         assignmentId={assignmentId}
       />

@@ -18,6 +18,7 @@ import { Input, PasswordInput } from "@/components/ui/input";
 import fetchAuth from "@/lib/fetch/fetchAuth";
 import { loginPayload } from "@/lib/types/authTypes";
 import Swal from "sweetalert2"
+import Link from "next/link";
 const queryClient = new QueryClient();
 const formSchema = z.object({
   email: z.string().min(2, {message: "Email must be at least 2 characters.",}),
@@ -109,6 +110,7 @@ function LoginPage() {
             <Button type="submit" className="w-full bg-accent-green">Submit</Button>
           </form>
         </Form>
+        <div className="text-xs">Not have account? <Link href={"/auth/register"} className="text-accent-green underline">Register</Link></div>
       </div>
     </main>
   );

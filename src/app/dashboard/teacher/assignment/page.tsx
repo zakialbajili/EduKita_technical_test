@@ -19,13 +19,13 @@ export default function Home() {
               <TabsTrigger value="MATEMATHIC">Mathematic</TabsTrigger>
             </TabsList>
             <TabsContent value="all">
-              <ListAssignment />
+              <ListAssignment scope="teacher"/>
             </TabsContent>
             <TabsContent value="ENGLISH">
-              <ListAssignment type="subject" subject="ENGLISH" />
+              <ListAssignment scope="teacher" type="subject" subject="ENGLISH" />
             </TabsContent>
             <TabsContent value="MATEMATHIC">
-              <ListAssignment type="subject" subject="MATEMATHIC" />
+              <ListAssignment scope="teacher" type="subject" subject="MATEMATHIC" />
             </TabsContent>
           </Tabs>
         </div>
