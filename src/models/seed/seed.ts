@@ -10,13 +10,31 @@ async function seedUser() {
         if(!isStudentEmail){
             const hashPW = bcrypt.hashSync("test1", 10)
             await prisma.user.create({
-                data:{ name: 'test1', email: 'test1@test.id', password:hashPW, role:"STUDENT" },
+                data:{
+                    email: 'test1@test.id',
+                    password:hashPW,
+                    userProfile:{
+                        create:{
+                            name: 'test1',
+                            role:"STUDENT"
+                        }
+                    }
+                },
             })
         }
         if(!isTeacherEmail){
             const hashPW = bcrypt.hashSync("teacher", 10)
             await prisma.user.create({
-                data:{ name: 'teacher', email: 'teacher@test.id', password:hashPW, role:"TEACHER" }
+                data:{ 
+                    email: 'teacher@test.id',
+                    password:hashPW,
+                    userProfile:{
+                        create:{
+                            name: 'teacher',
+                            role:"TEACHER"
+                        }
+                    }
+                }
             })
         }
         console.log("✅ Seeding Data User selesai telah selesai dibuat)")
@@ -35,14 +53,3 @@ async function runSeed() {
 
 runSeed()
 
-// seedUser()
-//   .then(() => {
-//     console.log('Seeding selesai ✅')
-//   })
-//   .catch((e) => {
-//     console.error(e)
-//     process.exit(1)
-//   })
-//   .finally(async () => {
-//     await prisma.$disconnect()
-//   })

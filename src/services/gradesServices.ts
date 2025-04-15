@@ -1,4 +1,3 @@
-import { submitAssignment } from "../types/assignmentTypes"
 import { payloadSubmitGrades } from "../types/gradesTypes"
 import db from "../utils/config/db"
 import { ValidationError } from "../utils/errors/customErrors"
@@ -7,9 +6,14 @@ class GradesServices {
     createDataGrades = async(req:payloadSubmitGrades) => {
         try {
             const {feedback, grade, teacherId, assignmentId} = req
-            console.log(teacherId)
+            const isTeacher = await db.user.findFirst({
+                where:{id:teacherId}
+            })
+            if(!isTeacher){
+                throw new ValidationError("Not any teacher with this id", "Id teacher not match with db")
+            }
             const findSender = await db.assignment.findFirst({
-                where:{id:assignmentId},
+                where:{id:Number(assignmentId)},
                 select:{iduser:true}
             })
             if (!findSender || findSender.iduser === null) {
@@ -37,7 +41,8 @@ class GradesServices {
             }
             const result = await db.assignment.findMany({
                 where:{
-                    iduser:studentId
+                    iduser:studentId,
+                    grade:{not:null}
                 },
                 orderBy:{
                     updated_at:"desc"

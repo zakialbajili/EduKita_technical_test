@@ -1,5 +1,6 @@
 import { subjectFilter, submitAssignment } from "../types/assignmentTypes"
 import db from "../utils/config/db"
+import { ValidationError } from "../utils/errors/customErrors"
 class AssignmentServices {
     // listAssignment = async() => {}
     submitAssignment = async(req:submitAssignment) => {
@@ -78,5 +79,26 @@ class AssignmentServices {
             console.error("Error in AssignmentServices Module detailAssignmentSubmitted Method", error)
         }
     }
+    listAssignmentbyId = async(studentId:number) => {
+            try {
+                if (typeof studentId !== "number" || isNaN(studentId)) {
+                    throw new ValidationError("Invalid schema when request services", "type studentId must number");
+                }
+                const result = await db.assignment.findMany({
+                    where:{
+                        iduser:studentId
+                    },
+                    orderBy:{
+                        updated_at:"desc"
+                    }
+                })
+                if(result instanceof Error){
+                    throw new Error
+                }
+                return result
+            } catch (error) {
+                console.error("Error in GradesServices Module getListGradesStudent Method", error)
+            }
+        }
 }
 export default new AssignmentServices()

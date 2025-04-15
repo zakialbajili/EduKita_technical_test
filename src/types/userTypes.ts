@@ -19,3 +19,9 @@ export type AccountType = {
     password?: string;
     userProfile:userProfile
 }
+
+export type credentialsAccount = {
+    name:string;
+    email:string;
+    role: "TEACHER" | "STUDENT";
+}
